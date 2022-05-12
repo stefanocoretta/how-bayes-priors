@@ -16,6 +16,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       beforeInit: "libs/macros.js"
+      ratio: 16:9
 fontsize: 14
 ---
 
@@ -30,6 +31,7 @@ library(lme4)
 library(brms)
 library(tidybayes)
 library(bayesplot)
+library(extraDistr)
 options(htmltools.dir.version = FALSE)
 xaringanExtra::use_xaringan_extra(c("panelset", "tachyons"))
 ```
@@ -52,29 +54,19 @@ class: middle
 
 We are faced every day with probabilities. Just think about the weather forecast.
 
-We say things like t"here is a 70% prob that it will rain today". In this sense, probability is the probability of an event occurring.
+We say things like "there is a 70% probability that it will rain today". In this sense, *probability* is the probability of an event occurring.
 
 But what about more complex situations that are not a flip-of-coin kinda situation? For example what about rolling two dice?
 
 Here is where probability distributions come in.
-
----
-
-# Grubabilities
-
-&nbsp;
-
-.center[
-![:scale 90%](img/grubabilities.png)
-]
-
-???
 
 A probability distribution is a list of values and their corresponding probability.
 
 ---
 
 # Discrete and continuous
+
+<br>
 
 .center[
 ![:scale 80%](img/discr-cont-probs.png)
@@ -83,166 +75,6 @@ A probability distribution is a list of values and their corresponding probabili
 ???
 
 Depending on the nature of the values a variable can take, there are 2 types of probs.
-
-
-
----
-
-# Discrete probability distributions
-
-.center[
-![:scale 60%](img/dice.png)
-]
-
-???
-
-
-A discrete probability distributions is like counting how many ways you can get a particular value.
-
-For example, if you roll a white and a black dice, there are 3 ways to get a 4 or a 10, but 6 ways to get a 7.
-
----
-
-# Discrete probability distributions
-
-```{r discs-p, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 10)
-y <- dpois(x, 3)
-ggplot() +
-  aes(x, y) +
-  geom_point(size = 5) +
-  geom_linerange(aes(xmin = x, xmax = x, ymin = 0, ymax = y), size = 2) +
-  scale_x_continuous(n.breaks = 10) +
-  labs(
-    x = "Count", y = "Density",
-    title = "Poisson distribution",
-    subtitle = expression(paste(lambda, "=3"))
-  )
-```
-
-???
-
-The Poisson is the probability distribution of counts (like counting eyes, number of fillers in speech, etc).
-
----
-
-# Continuous probability distributions
-
-```{r cont-p, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 400)
-ggplot() +
-  aes(x = x, y = dnorm(x, 200, 50)) +
-  geom_line(size = 2) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Gaussian distribution",
-    subtitle = expression(paste(mu, "=200", ", ", sigma, "=50"))
-  )
-```
-
-???
-
-With continuous probabilities we cannot make a list of all the possible values (0.0, 0.00, 0.000, 0.0001...), because there is an infinite number of possible values. So we cannot assign a probability to a specific value.
-
-Instead, we assign probabilities to a range of values.
-
----
-
-# Continuous probability distributions
-
-```{r cont-p-2, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 400)
-y = dnorm(x, 200, 50)
-ggplot() +
-  aes(x, y) +
-  geom_ribbon(aes(x = ifelse(x < 160.0001 , x, NA), ymin = 0, ymax = y), alpha = 0.5, fill = "#FFA70B") +
-  geom_line(size = 2) +
-  scale_x_continuous(breaks = c(0, 100, 160, 200, 300, 400)) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Gaussian distribution",
-    subtitle = expression(paste(mu, "=200", ", ", sigma, "=50"))
-  )
-```
-
-???
-
-In this example, we want to know the probability of getting a mean f0 between 0 and 160 Hz.
-
-We simply calculate the area under the curve between those two values (the total area under the curve is 1).
-
-The probability of f0 being less than 160 Hz is `r round(pnorm(160, 200, 50), digits = 3)`.
-
----
-
-# Continuous probability distributions
-
-```{r cont-p-3, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 400)
-y = dnorm(x, 200, 50)
-ggplot() +
-  aes(x, y) +
-  geom_ribbon(aes(x = ifelse(x > 219.999 , x, NA), ymin = 0, ymax = y), alpha = 0.5, fill = "#FFA70B") +
-  geom_line(size = 2) +
-  scale_x_continuous(breaks = c(0, 100, 200, 220, 300, 400)) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Gaussian distribution",
-    subtitle = expression(paste(mu, "=200", ", ", sigma, "=50"))
-  )
-```
-
-???
-
-The probability of f0 being greater than 220 Hz is `r round(pnorm(220, 200, 50, lower.tail = FALSE), digits = 3)`.
-
----
-
-# Continuous probability distributions
-
-```{r cont-p-4, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 400)
-y = dnorm(x, 200, 50)
-ggplot() +
-  aes(x, y) +
-  geom_ribbon(aes(x = ifelse(x > 119.999 & x < 210.001 , x, NA), ymin = 0, ymax = y), alpha = 0.5, fill = "#FFA70B") +
-  geom_line(size = 2) +
-  scale_x_continuous(breaks = c(0, 100, 120, 200, 210, 300, 400)) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Gaussian distribution",
-    subtitle = expression(paste(mu, "=200", ", ", sigma, "=50"))
-  )
-```
-
-???
-
-The probability of f0 being between 120 and 210 Hz is `r round(pnorm(210, 200, 50) - pnorm(120, 200, 50), digits = 3)`
-
----
-
-# Continuous probability distributions
-
-```{r cont-p-5, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 1, by = 0.01)
-y = dbeta(x, 2, 5)
-ggplot() +
-  aes(x, y) +
-  geom_vline(xintercept = c(0, 1), colour = "grey") +
-  geom_ribbon(aes(x, ymin = 0, ymax = y), alpha = 0.5, fill = "#FFA70B") +
-  geom_line(size = 2) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Beta distribution",
-    subtitle = expression(paste(alpha, "=2", ", ", beta, "=5"))
-  )
-```
-
-???
-
-There are many other types of continuous probability distributions
-
-This is the beta distribution. It's bounded between 0 and 1, and it's used for example with proportions and percentages (which can take on any value between 0-1 and 0-100%).
 
 ---
 
@@ -257,28 +89,18 @@ But how do we describe probability distributions? We can't make a list of all va
 Instead, we specify the value of a few parameters that describe the distribution in a succinct way.
 
 ---
+
 class: middle
 
-<span style="font-size:3.5em;">$$y_i \sim Normal(\mu, \sigma)$$</span>
+<span style="font-size:3em;">$$y_i \sim Gaussian(\mu, \sigma)$$</span>
 
 ???
 
 Let's look at some formulas.
 
-This is the formula of a variable $y_1$ that is distributed according to (~) a Normal probability distribution.
+This is the formula of a variable $y_1$ that is distributed according to (~) a Gaussian probability distribution.
 
-As we have seen in the example above, a Normal distribution can be described with two parameters: the mean and the standard deviation.
-
----
-class: middle
-
-<span style="font-size:3.5em;">$$\text{f0}_i \sim Normal(200, 50)$$</span>
-
-???
-
-Remember the example above of a Gaussian/Normal distribution of f0?
-
-We can describe that distribution with this formula (much easier than listing all the values and their probability).
+A Gaussian distribution can be described with two parameters: the mean and the standard deviation.
 
 ---
 
@@ -296,38 +118,21 @@ ggplot() +
   )
 ```
 
-???
-
-Nothing new here. Just the distribution as we've seen before.
-
 ---
 
-class: inverse center bottom
-background-image: url("img/chris-robert-unsplash.jpg")
+class: middle
 
-# BREAK
-
----
-
-# Memory loss
-
-.center[
-![:scale 40%](img/Goldfish-MEME.png)
-]
-
-<span style="font-size:10pt;">https://thinking.umwblogs.org/2020/02/26/goldfish-memory/</span>
+<span style="font-size:3em;">$$\text{f0}_i \sim Gaussian(200, 50)$$</span>
 
 ???
 
-Frequentist statistics suffers from "memory loss": results of past studies are "forgotten".
-
-One important aspect of Bayesian analysis is prior knowledge (you've seen that with the Bayes theorem).
-
-We can take prior knowledge, or belief, into consideration thanks to "Bayesian belief updating".
+We can describe that distribution with this formula (much easier than listing all the values and their probability).
 
 ---
 
 # Bayesian belief update
+
+<br>
 
 .center[
 ![:scale 60%](img/prior-update.png)
@@ -355,13 +160,13 @@ class: middle
 
 &nbsp;
 
-<span style="font-size:3em;">$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$</span>
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
 
 ???
 
-Our prior belief about articulation rate is that it is distributed according to a Normal (aka Gaussian) distribution.
+Our prior belief about RTs is that they are distributed according to a Gaussian (aka Gaussian) distribution.
 
-The Normal distribution has two parameters: mean $\mu$ and standard deviation $\sigma$.
+The Gaussian distribution has two parameters: mean $\mu$ and standard deviation $\sigma$.
 
 Now, we want to estimate these two parameters from the data.
 
@@ -369,37 +174,59 @@ Now, we want to estimate these two parameters from the data.
 
 # Prior belief as probability distributions
 
-<span style="font-size:2.5em;">$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$</span>
+&nbsp;
 
-<span style="font-size:2.5em;">$$\mu = ...?$$</span>
+**Reaction Times** from a lexical decision task.
+
+<br>
+
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+
+<span style="font-size:1.5em;">$$\mu = ...?$$</span>
 
 ???
 
-We do have an idea of what the mean articulation rate could be like but we are not certain.
+We do have an idea of what the mean RT could be like but we are not certain.
 
 When you are not certain, you make a list of values and their probability, i.e. a probability distribution!
 
+https://app.sli.do/event/5yqqvpyDeaTeRDg2Faojay
+
 ---
 
 # Prior belief as probability distributions
 
-<span style="font-size:2.5em;">$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$</span>
+&nbsp;
 
-<span style="font-size:2.5em;">$$\mu \sim Normal(\mu_1, \sigma_1)$$</span>
+**Reaction Times** from a lexical decision task.
+
+<br>
+
+
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+
+<span style="font-size:1.5em;">$$\mu \sim Gaussian(\mu_1, \sigma_1)$$</span>
 
 ???
 
-Usually, we assume the mean to be a value taken from another Normal distribution (with its own mean and SD).
+Usually, we assume the mean $\mu$ to be a value taken from another Gaussian distribution (with its own mean and SD).
 
-This Normal distribution is the **prior probability distribution** (or simply prior) of the mean.
+This Gaussian distribution is the **prior probability distribution** (or simply prior) of the mean.
 
 ---
 
 # Prior belief as probability distributions
 
-<span style="font-size:2.5em;">$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$</span>
+&nbsp;
 
-<span style="font-size:2.5em;">$$\mu \sim Normal(0, \sigma_1)$$</span>
+**Reaction Times** from a lexical decision task.
+
+<br>
+
+
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+
+<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, \sigma_1)$$</span>
 
 ???
 
@@ -407,7 +234,10 @@ We will talk about different types of priors later. For now it's sufficient to r
 
 --
 
-<span style="font-size:2.5em;">$$\sigma_1 = ...?$$</span>
+<br>
+<br>
+
+**What about $\sigma_1$?**
 
 ???
 
@@ -456,51 +286,146 @@ ggplot() +
 
 ???
 
-As a general rule, $\pm2\sigma_1$ covers 95% of the Normal distribution, which means we are 95% confident that the value lies within that range.
+As a general rule, $\pm2\sigma_1$ covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
 
-Let's be generous and assume that the mean articulation rate will definitely not be greater than 30 syllables per second. (This might seem like a very high number, but we will see tomorrow how it can help estimation)
+Let's be generous and assume that the mean RT will definitely not be greater than 3 seconds. (This might seem like a very high number, but we will see how it can help estimation)
 
-30/2 = 15 (remember, two times the SD), so we can set $\sigma_1 = 15$.
+3000/2 = 1500 ms (remember, two times the SD), so we can set $\sigma_1 = 1500$.
 
 ---
 
 # Seeing is believing
 
 ```{r prior-1, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(-60, 60)
+x <- seq(-6000, 6000)
 ggplot() +
-  aes(x = x, y = dnorm(x, 0, 15)) +
+  aes(x = x, y = dnorm(x, 0, 1500)) +
   geom_line(size = 2, colour = "#8970FF") +
   labs(
-    x = "Articulation rate (syl/s)", y = "Density",
+    x = "RT (ms)", y = "Density",
     title = expression(paste("Prior for ", mu)),
-    subtitle = expression(paste(mu[1], "=0", ", ", sigma[1], "=15"))
+    subtitle = expression(paste(mu[1], "=0", ", ", sigma[1], "=1500"))
   )
 ```
 
 ???
 
-Visualising priors is important, because it's easier to grasp its meaning when you can actually see the shape of the distribution.
+Visualising priors is important, because it's easier to grasp their meaning when you can actually see the shape of the distribution.
 
-Are you wondering about the negative values? (Articulation rate cannot be negative!) I will tell more about this and how to "fix" it tomorrow.
+Are you wondering about the negative values? (RT cannot be negative!) I will tell more about this and how to "fix" it later.
+
+---
+
+# Prior belief as probability distributions
+
+&nbsp;
+
+**Reaction Times** from a lexical decision task.
+
+<br>
+
+
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+
+<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, 1500)$$</span>
+
+---
+
+# Get the default priors
+
+<br>
+
+```{r get-prior}
+get_prior(
+  RT ~ 1,
+  data = mald,
+  family = gaussian
+)
+```
+
+---
+
+# Set your priors
+
+<br>
+
+```{r set-priors, eval=FALSE}
+my_priors <- c(
+  prior(...), # Intercept
+  prior(...)  # sigma
+)
+```
+
+---
+
+# Set your priors
+
+<br>
+
+```{r set-priors-2, eval=FALSE}
+my_priors <- c(
+  prior(normal(0, 1500), class = Intercept), # Intercept
+  prior(...)  # sigma
+)
+```
+
+---
+
+# What about $\sigma$?
+
+<br>
+<br>
+
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+
+<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, 1500)$$</span>
+
+<span style="font-size:1.5em;">$$\sigma = ...?$$</span>
+
+???
+
+Now, what about $\sigma$? (Be careful not to mix up $\sigma$ and $\sigma_1$! This is $\sigma$ from the first line, not $\sigma_1$ from the second line).
+
+---
+
+# Prior for $\sigma$: Half Cauchy
+
+<br>
+
+```{r cauchy, echo=FALSE}
+x <- seq(0, 1500, by = 0.1)
+y <- dhcauchy(x, sigma = 100)
+ggplot() +
+  aes(x, y) +
+  geom_line(size = 2) +
+  labs(
+    x = "Articulation rate (syl/s)", y = "Density",
+    title = "Half Cauchy distribution",
+    subtitle = expression(paste(mu, "=0", ", ", sigma, "=100"))
+  )
+```
+
+???
+
+```{r hdi-hcauchy}
+HDInterval::inverseCDF(
+  c(0.5, 0.75, 0.95),
+  phcauchy,
+  sigma = 100
+)
+```
+
+
+---
+
+class: inverse center bottom
+background-image: url("img/chris-robert-unsplash.jpg")
+
+# BREAK
 
 ---
 
 class: inverse center middle
 background-image: url("img/code-matrix.jpg")
 
-# <span style="font-size:3em;">LIVE CODING</span>
-
----
-
-# And $\sigma$?
-
-<span style="font-size:2.5em;">$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$</span>
-
-<span style="font-size:2.5em;">$$\mu \sim Normal(0, 15)$$</span>
-
-<span style="font-size:2.5em;">$$\sigma = ...?$$</span>
-
-???
-
-Now, what about $\sigma$? (Be careful not to mix up $\sigma$ and $\sigma_1$! This is $\sigma$ from the first line, not $sigma_1$ from the second line).
+# <span style="font-size:1.5em;">LIVE CODING</span>

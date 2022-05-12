@@ -4,7 +4,7 @@
     <title>How to Bayes: Priors</title>
     <meta charset="utf-8" />
     <meta name="author" content="Stefano Coretta" />
-    <meta name="date" content="2022-05-04" />
+    <meta name="date" content="2022-05-12" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
@@ -27,7 +27,7 @@ class: center, middle, inverse, title-slide
 ### UoE LEL
 ]
 .date[
-### 2022-05-04
+### 2022-05-12
 ]
 
 ---
@@ -52,29 +52,19 @@ class: middle
 
 We are faced every day with probabilities. Just think about the weather forecast.
 
-We say things like t"here is a 70% prob that it will rain today". In this sense, probability is the probability of an event occurring.
+We say things like "there is a 70% probability that it will rain today". In this sense, *probability* is the probability of an event occurring.
 
 But what about more complex situations that are not a flip-of-coin kinda situation? For example what about rolling two dice?
 
 Here is where probability distributions come in.
-
----
-
-# Grubabilities
-
-&amp;nbsp;
-
-.center[
-![:scale 90%](img/grubabilities.png)
-]
-
-???
 
 A probability distribution is a list of values and their corresponding probability.
 
 ---
 
 # Discrete and continuous
+
+&lt;br&gt;
 
 .center[
 ![:scale 80%](img/discr-cont-probs.png)
@@ -83,91 +73,6 @@ A probability distribution is a list of values and their corresponding probabili
 ???
 
 Depending on the nature of the values a variable can take, there are 2 types of probs.
-
-
-
----
-
-# Discrete probability distributions
-
-.center[
-![:scale 60%](img/dice.png)
-]
-
-???
-
-
-A discrete probability distributions is like counting how many ways you can get a particular value.
-
-For example, if you roll a white and a black dice, there are 3 ways to get a 4 or a 10, but 6 ways to get a 7.
-
----
-
-# Discrete probability distributions
-
-&lt;img src="index_files/figure-html/discs-p-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-The Poisson is the probability distribution of counts (like counting eyes, number of fillers in speech, etc).
-
----
-
-# Continuous probability distributions
-
-&lt;img src="index_files/figure-html/cont-p-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-With continuous probabilities we cannot make a list of all the possible values (0.0, 0.00, 0.000, 0.0001...), because there is an infinite number of possible values. So we cannot assign a probability to a specific value.
-
-Instead, we assign probabilities to a range of values.
-
----
-
-# Continuous probability distributions
-
-&lt;img src="index_files/figure-html/cont-p-2-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-In this example, we want to know the probability of getting a mean f0 between 0 and 160 Hz.
-
-We simply calculate the area under the curve between those two values (the total area under the curve is 1).
-
-The probability of f0 being less than 160 Hz is 0.212.
-
----
-
-# Continuous probability distributions
-
-&lt;img src="index_files/figure-html/cont-p-3-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-The probability of f0 being greater than 220 Hz is 0.345.
-
----
-
-# Continuous probability distributions
-
-&lt;img src="index_files/figure-html/cont-p-4-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-The probability of f0 being between 120 and 210 Hz is 0.524
-
----
-
-# Continuous probability distributions
-
-&lt;img src="index_files/figure-html/cont-p-5-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
-???
-
-There are many other types of continuous probability distributions
-
-This is the beta distribution. It's bounded between 0 and 1, and it's used for example with proportions and percentages (which can take on any value between 0-1 and 0-100%).
 
 ---
 
@@ -182,28 +87,18 @@ But how do we describe probability distributions? We can't make a list of all va
 Instead, we specify the value of a few parameters that describe the distribution in a succinct way.
 
 ---
+
 class: middle
 
-&lt;span style="font-size:3.5em;"&gt;$$y_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
+&lt;span style="font-size:3em;"&gt;$$y_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
 
 ???
 
 Let's look at some formulas.
 
-This is the formula of a variable `\(y_1\)` that is distributed according to (~) a Normal probability distribution.
+This is the formula of a variable `\(y_1\)` that is distributed according to (~) a Gaussian probability distribution.
 
-As we have seen in the example above, a Normal distribution can be described with two parameters: the mean and the standard deviation.
-
----
-class: middle
-
-&lt;span style="font-size:3.5em;"&gt;$$\text{f0}_i \sim Normal(200, 50)$$&lt;/span&gt;
-
-???
-
-Remember the example above of a Gaussian/Normal distribution of f0?
-
-We can describe that distribution with this formula (much easier than listing all the values and their probability).
+A Gaussian distribution can be described with two parameters: the mean and the standard deviation.
 
 ---
 
@@ -211,38 +106,21 @@ class: center middle
 
 &lt;img src="index_files/figure-html/f0-prior-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
 
-???
-
-Nothing new here. Just the distribution as we've seen before.
-
 ---
 
-class: inverse center bottom
-background-image: url("img/chris-robert-unsplash.jpg")
+class: middle
 
-# BREAK
-
----
-
-# Memory loss
-
-.center[
-![:scale 40%](img/Goldfish-MEME.png)
-]
-
-&lt;span style="font-size:10pt;"&gt;https://thinking.umwblogs.org/2020/02/26/goldfish-memory/&lt;/span&gt;
+&lt;span style="font-size:3em;"&gt;$$\text{f0}_i \sim Gaussian(200, 50)$$&lt;/span&gt;
 
 ???
 
-Frequentist statistics suffers from "memory loss": results of past studies are "forgotten".
-
-One important aspect of Bayesian analysis is prior knowledge (you've seen that with the Bayes theorem).
-
-We can take prior knowledge, or belief, into consideration thanks to "Bayesian belief updating".
+We can describe that distribution with this formula (much easier than listing all the values and their probability).
 
 ---
 
 # Bayesian belief update
+
+&lt;br&gt;
 
 .center[
 ![:scale 60%](img/prior-update.png)
@@ -270,13 +148,13 @@ class: middle
 
 &amp;nbsp;
 
-&lt;span style="font-size:3em;"&gt;$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
 
 ???
 
-Our prior belief about articulation rate is that it is distributed according to a Normal (aka Gaussian) distribution.
+Our prior belief about RTs is that they are distributed according to a Gaussian (aka Gaussian) distribution.
 
-The Normal distribution has two parameters: mean `\(\mu\)` and standard deviation `\(\sigma\)`.
+The Gaussian distribution has two parameters: mean `\(\mu\)` and standard deviation `\(\sigma\)`.
 
 Now, we want to estimate these two parameters from the data.
 
@@ -284,37 +162,59 @@ Now, we want to estimate these two parameters from the data.
 
 # Prior belief as probability distributions
 
-&lt;span style="font-size:2.5em;"&gt;$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
+&amp;nbsp;
 
-&lt;span style="font-size:2.5em;"&gt;$$\mu = ...?$$&lt;/span&gt;
+**Reaction Times** from a lexical decision task.
+
+&lt;br&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\mu = ...?$$&lt;/span&gt;
 
 ???
 
-We do have an idea of what the mean articulation rate could be like but we are not certain.
+We do have an idea of what the mean RT could be like but we are not certain.
 
 When you are not certain, you make a list of values and their probability, i.e. a probability distribution!
 
+https://app.sli.do/event/5yqqvpyDeaTeRDg2Faojay
+
 ---
 
 # Prior belief as probability distributions
 
-&lt;span style="font-size:2.5em;"&gt;$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
+&amp;nbsp;
 
-&lt;span style="font-size:2.5em;"&gt;$$\mu \sim Normal(\mu_1, \sigma_1)$$&lt;/span&gt;
+**Reaction Times** from a lexical decision task.
+
+&lt;br&gt;
+
+
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(\mu_1, \sigma_1)$$&lt;/span&gt;
 
 ???
 
-Usually, we assume the mean to be a value taken from another Normal distribution (with its own mean and SD).
+Usually, we assume the mean `\(\mu\)` to be a value taken from another Gaussian distribution (with its own mean and SD).
 
-This Normal distribution is the **prior probability distribution** (or simply prior) of the mean.
+This Gaussian distribution is the **prior probability distribution** (or simply prior) of the mean.
 
 ---
 
 # Prior belief as probability distributions
 
-&lt;span style="font-size:2.5em;"&gt;$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
+&amp;nbsp;
 
-&lt;span style="font-size:2.5em;"&gt;$$\mu \sim Normal(0, \sigma_1)$$&lt;/span&gt;
+**Reaction Times** from a lexical decision task.
+
+&lt;br&gt;
+
+
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, \sigma_1)$$&lt;/span&gt;
 
 ???
 
@@ -322,7 +222,10 @@ We will talk about different types of priors later. For now it's sufficient to r
 
 --
 
-&lt;span style="font-size:2.5em;"&gt;$$\sigma_1 = ...?$$&lt;/span&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+**What about `\(\sigma_1\)`?**
 
 ???
 
@@ -337,11 +240,11 @@ What about `\(\sigma_1\)`?
 
 ???
 
-As a general rule, `\(\pm2\sigma_1\)` covers 95% of the Normal distribution, which means we are 95% confident that the value lies within that range.
+As a general rule, `\(\pm2\sigma_1\)` covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
 
-Let's be generous and assume that the mean articulation rate will definitely not be greater than 30 syllables per second. (This might seem like a very high number, but we will see tomorrow how it can help estimation)
+Let's be generous and assume that the mean RT will definitely not be greater than 3 seconds. (This might seem like a very high number, but we will see how it can help estimation)
 
-30/2 = 15 (remember, two times the SD), so we can set `\(\sigma_1 = 15\)`.
+3000/2 = 1500 ms (remember, two times the SD), so we can set `\(\sigma_1 = 1500\)`.
 
 ---
 
@@ -351,30 +254,128 @@ Let's be generous and assume that the mean articulation rate will definitely not
 
 ???
 
-Visualising priors is important, because it's easier to grasp its meaning when you can actually see the shape of the distribution.
+Visualising priors is important, because it's easier to grasp their meaning when you can actually see the shape of the distribution.
 
-Are you wondering about the negative values? (Articulation rate cannot be negative!) I will tell more about this and how to "fix" it tomorrow.
+Are you wondering about the negative values? (RT cannot be negative!) I will tell more about this and how to "fix" it later.
+
+---
+
+# Prior belief as probability distributions
+
+&amp;nbsp;
+
+**Reaction Times** from a lexical decision task.
+
+&lt;br&gt;
+
+
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, 1500)$$&lt;/span&gt;
+
+---
+
+# Get the default priors
+
+&lt;br&gt;
+
+
+```r
+get_prior(
+  RT ~ 1,
+  data = mald,
+  family = gaussian
+)
+```
+
+```
+##                     prior     class coef group resp dpar nlpar lb ub  source
+##  student_t(3, 952, 220.9) Intercept                                  default
+##    student_t(3, 0, 220.9)     sigma                             0    default
+```
+
+---
+
+# Set your priors
+
+&lt;br&gt;
+
+
+```r
+my_priors &lt;- c(
+  prior(...), # Intercept
+  prior(...)  # sigma
+)
+```
+
+---
+
+# Set your priors
+
+&lt;br&gt;
+
+
+```r
+my_priors &lt;- c(
+  prior(normal(0, 1500), class = Intercept), # Intercept
+  prior(...)  # sigma
+)
+```
+
+---
+
+# What about `\(\sigma\)`?
+
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, 1500)$$&lt;/span&gt;
+
+&lt;span style="font-size:1.5em;"&gt;$$\sigma = ...?$$&lt;/span&gt;
+
+???
+
+Now, what about `\(\sigma\)`? (Be careful not to mix up `\(\sigma\)` and `\(\sigma_1\)`! This is `\(\sigma\)` from the first line, not `\(\sigma_1\)` from the second line).
+
+---
+
+# Prior for `\(\sigma\)`: Half Cauchy
+
+&lt;br&gt;
+
+&lt;img src="index_files/figure-html/cauchy-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+???
+
+
+```r
+HDInterval::inverseCDF(
+  c(0.5, 0.75, 0.95),
+  phcauchy,
+  sigma = 100
+)
+```
+
+```
+## [1]  100.0000  241.4214 1270.6205
+```
+
+
+---
+
+class: inverse center bottom
+background-image: url("img/chris-robert-unsplash.jpg")
+
+# BREAK
 
 ---
 
 class: inverse center middle
 background-image: url("img/code-matrix.jpg")
 
-# &lt;span style="font-size:3em;"&gt;LIVE CODING&lt;/span&gt;
-
----
-
-# And `\(\sigma\)`?
-
-&lt;span style="font-size:2.5em;"&gt;$$\text{articulation_rate}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
-
-&lt;span style="font-size:2.5em;"&gt;$$\mu \sim Normal(0, 15)$$&lt;/span&gt;
-
-&lt;span style="font-size:2.5em;"&gt;$$\sigma = ...?$$&lt;/span&gt;
-
-???
-
-Now, what about `\(\sigma\)`? (Be careful not to mix up `\(\sigma\)` and `\(\sigma_1\)`! This is `\(\sigma\)` from the first line, not `\(sigma_1\)` from the second line).
+# &lt;span style="font-size:1.5em;"&gt;LIVE CODING&lt;/span&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -383,7 +384,8 @@ Now, what about `\(\sigma\)`? (Be careful not to mix up `\(\sigma\)` and `\(\sig
 "highlightStyle": "agate",
 "highlightLanguage": "r",
 "highlightLines": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": false,
+"ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
