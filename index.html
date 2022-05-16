@@ -4,7 +4,7 @@
     <title>How to Bayes: Priors</title>
     <meta charset="utf-8" />
     <meta name="author" content="Stefano Coretta" />
-    <meta name="date" content="2022-05-12" />
+    <meta name="date" content="2022-05-16" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
@@ -27,7 +27,7 @@ class: center, middle, inverse, title-slide
 ### UoE LEL
 ]
 .date[
-### 2022-05-12
+### 2022-05-16
 ]
 
 ---
@@ -37,86 +37,6 @@ class: center, middle, inverse, title-slide
 
 
 
-
-class: middle
-
-.pull-left[
-![](img/06-rainy-umbrella-humid.svg)
-]
-
-.pull-right[
-![](img/01-sunny.svg)
-]
-
-???
-
-We are faced every day with probabilities. Just think about the weather forecast.
-
-We say things like "there is a 70% probability that it will rain today". In this sense, *probability* is the probability of an event occurring.
-
-But what about more complex situations that are not a flip-of-coin kinda situation? For example what about rolling two dice?
-
-Here is where probability distributions come in.
-
-A probability distribution is a list of values and their corresponding probability.
-
----
-
-# Discrete and continuous
-
-&lt;br&gt;
-
-.center[
-![:scale 80%](img/discr-cont-probs.png)
-]
-
-???
-
-Depending on the nature of the values a variable can take, there are 2 types of probs.
-
----
-
-class: middle
-
-&lt;iframe src="https://seeing-theory.brown.edu/probability-distributions/index.html#section2" style="border:none;" width="100%" height="100%"&gt;
-
-???
-
-But how do we describe probability distributions? We can't make a list of all values and probabilities, especially for continuous probabilities.
-
-Instead, we specify the value of a few parameters that describe the distribution in a succinct way.
-
----
-
-class: middle
-
-&lt;span style="font-size:3em;"&gt;$$y_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
-
-???
-
-Let's look at some formulas.
-
-This is the formula of a variable `\(y_1\)` that is distributed according to (~) a Gaussian probability distribution.
-
-A Gaussian distribution can be described with two parameters: the mean and the standard deviation.
-
----
-
-class: center middle
-
-&lt;img src="index_files/figure-html/f0-prior-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
-
----
-
-class: middle
-
-&lt;span style="font-size:3em;"&gt;$$\text{f0}_i \sim Gaussian(200, 50)$$&lt;/span&gt;
-
-???
-
-We can describe that distribution with this formula (much easier than listing all the values and their probability).
-
----
 
 # Bayesian belief update
 
@@ -130,7 +50,7 @@ We can describe that distribution with this formula (much easier than listing al
 
 How do we ensure that prior knowledge is not lost?
 
-You've seen in Session 01 that Bayesian analysis is about estimating the posterior probability distribution of a variable of interest.
+You've seen in the previous sessions that Bayesian analysis is about estimating the posterior probability distribution of a variable of interest.
 
 Roughly speaking, the posterior probability distribution is the combination of the prior belief and the evidence derived from the data.
 
@@ -138,39 +58,135 @@ Prior and evidence are, of course, probability distributions.
 
 ---
 
-class: middle
+# Example from last time
 
-&lt;iframe src="https://seeing-theory.brown.edu/bayesian-inference/index.html#section3" style="border:none;" width="100%" height="100%"&gt;
+[Massive Auditory Lexical Decision](https://aphl.artsrn.ualberta.ca/?page_id=827) (Tucker et al. 2019):
+
+- **MALD data set**: 521 subjects, RTs and accuracy.
+
+- Subset of MALD: 30 subjects, 100 observations each.
+
+--
+
+
+```r
+mald
+```
+
+```
+## # A tibble: 3,000 × 7
+##    Subject Item         IsWord PhonLev    RT ACC   RT_log
+##    &lt;chr&gt;   &lt;chr&gt;        &lt;fct&gt;    &lt;dbl&gt; &lt;int&gt; &lt;lgl&gt;  &lt;dbl&gt;
+##  1 15345   nihnaxr      FALSE     5.84   945 TRUE    6.85
+##  2 15345   skaep        FALSE     6.03  1046 FALSE   6.95
+##  3 15345   grandparents TRUE     10.3    797 TRUE    6.68
+##  4 15345   sehs         FALSE     5.88  2134 TRUE    7.67
+##  5 15345   cousin       TRUE      5.78   597 TRUE    6.39
+##  6 15345   blowup       TRUE      6.03   716 TRUE    6.57
+##  7 15345   hhehrnzmaxn  FALSE     7.30  1985 TRUE    7.59
+##  8 15345   mantic       TRUE      6.21  1591 TRUE    7.37
+##  9 15345   notable      TRUE      6.82   620 TRUE    6.43
+## 10 15345   prowthihviht FALSE     7.68  1205 TRUE    7.09
+## # … with 2,990 more rows
+```
+
 
 ---
 
-# Prior belief as probability distributions
+# Let's start small
 
-&amp;nbsp;
+.f2[
+What is the probability distribution of RTs, across all conditions?
+]
 
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+---
+
+# Distribution of RTs
+
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+]
 
 ???
 
-Our prior belief about RTs is that they are distributed according to a Gaussian (aka Gaussian) distribution.
+This formula tells us that `RT`s are distributed according to (`~`) a Gaussian distribution with mean `\(\mu\)` and standard deviation `\(\sigma\)`.
 
-The Gaussian distribution has two parameters: mean `\(\mu\)` and standard deviation `\(\sigma\)`.
+--
 
-Now, we want to estimate these two parameters from the data.
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Which values do `\(\mu\)` and `\(\sigma\)` have?
+
+--
+
+Pick a `\(\mu\)` and `\(\sigma\)`. (OK, but how?)
 
 ---
 
-# Prior belief as probability distributions
+layout: true
 
-&amp;nbsp;
+# The empirical rule
 
-**Reaction Times** from a lexical decision task.
+---
+
+&lt;img src="index_files/figure-html/empirical-rule-1-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="index_files/figure-html/empirical-rule-2-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="index_files/figure-html/empirical-rule-3-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+&lt;img src="index_files/figure-html/empirical-rule-4-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="index_files/figure-html/empirical-rule-5-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+
+???
+
+As a general rule, `\(\pm2\sigma\)` covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
+
+---
+
+layout: false
+
+# Distribution of RTs
+
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+]
+
 
 &lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
 
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+Pick a `\(\mu\)` and `\(\sigma\)`.
 
-&lt;span style="font-size:1.5em;"&gt;$$\mu = ...?$$&lt;/span&gt;
+Report them here: &lt;https://forms.gle/cqBNtDvZ6NdnpPo79&gt;
+
+---
+
+class: center middle inverse
+
+.f1[Now let's see what we got!]
+
+---
+
+# Distribution of RTs
+
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+`$$\mu = ...?$$`
+]
 
 ???
 
@@ -178,22 +194,14 @@ We do have an idea of what the mean RT could be like but we are not certain.
 
 When you are not certain, you make a list of values and their probability, i.e. a probability distribution!
 
-https://app.sli.do/event/5yqqvpyDeaTeRDg2Faojay
-
 ---
 
 # Prior belief as probability distributions
 
-&amp;nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-&lt;br&gt;
-
-
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
-
-&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(\mu_1, \sigma_1)$$&lt;/span&gt;
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+`$$\mu \sim Normal(\mu_1, \sigma_1)$$`
+]
 
 ???
 
@@ -205,16 +213,10 @@ This Gaussian distribution is the **prior probability distribution** (or simply 
 
 # Prior belief as probability distributions
 
-&amp;nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-&lt;br&gt;
-
-
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
-
-&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, \sigma_1)$$&lt;/span&gt;
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+`$$\mu \sim Normal(\mu_1 = 0, \sigma_1)$$`
+]
 
 ???
 
@@ -227,30 +229,27 @@ We will talk about different types of priors later. For now it's sufficient to r
 
 **What about `\(\sigma_1\)`?**
 
-???
-
-What about `\(\sigma_1\)`?
-
 ---
 
-# The empirical rule
+# Prior belief as probability distributions
 
-
-&lt;img src="index_files/figure-html/empirical-rule-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+`$$\mu \sim Normal(\mu_1 = 0, \sigma_1)$$`
+]
 
 ???
-
-As a general rule, `\(\pm2\sigma_1\)` covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
 
 Let's be generous and assume that the mean RT will definitely not be greater than 3 seconds. (This might seem like a very high number, but we will see how it can help estimation)
 
-3000/2 = 1500 ms (remember, two times the SD), so we can set `\(\sigma_1 = 1500\)`.
+`\(3000/2 = 1500\)` ms (remember, two times the SD), so we can set `\(\sigma_1 = 1500\)`.
+
 
 ---
 
 # Seeing is believing
 
-&lt;img src="index_files/figure-html/prior-1-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/mu1-prior-1.png" width="800px" height="500px" style="display: block; margin: auto;" /&gt;
 
 ???
 
@@ -258,26 +257,21 @@ Visualising priors is important, because it's easier to grasp their meaning when
 
 Are you wondering about the negative values? (RT cannot be negative!) I will tell more about this and how to "fix" it later.
 
+WARNING: The distribution that you see here **is not** the distribution of RTs! It's the prior distribution of the mean of that distribution.
+
 ---
 
 # Prior belief as probability distributions
 
-&amp;nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-&lt;br&gt;
-
-
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
-
-&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, 1500)$$&lt;/span&gt;
+.f2[
+`$$\text{RT}_i \sim Normal(\mu, \sigma)$$`
+`$$\mu \sim Normal(0, 1500)$$`
+]
 
 ---
 
 # Get the default priors
 
-&lt;br&gt;
 
 
 ```r
@@ -329,9 +323,9 @@ my_priors &lt;- c(
 &lt;br&gt;
 &lt;br&gt;
 
-&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$&lt;/span&gt;
+&lt;span style="font-size:1.5em;"&gt;$$\text{RT}_i \sim Normal(\mu, \sigma)$$&lt;/span&gt;
 
-&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Gaussian(0, 1500)$$&lt;/span&gt;
+&lt;span style="font-size:1.5em;"&gt;$$\mu \sim Normal(0, 1500)$$&lt;/span&gt;
 
 &lt;span style="font-size:1.5em;"&gt;$$\sigma = ...?$$&lt;/span&gt;
 

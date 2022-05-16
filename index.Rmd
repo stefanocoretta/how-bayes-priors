@@ -40,96 +40,6 @@ xaringanExtra::use_xaringan_extra(c("panelset", "tachyons"))
 mald <- readRDS("./data/mald.rds")
 ```
 
-class: middle
-
-.pull-left[
-![](img/06-rainy-umbrella-humid.svg)
-]
-
-.pull-right[
-![](img/01-sunny.svg)
-]
-
-???
-
-We are faced every day with probabilities. Just think about the weather forecast.
-
-We say things like "there is a 70% probability that it will rain today". In this sense, *probability* is the probability of an event occurring.
-
-But what about more complex situations that are not a flip-of-coin kinda situation? For example what about rolling two dice?
-
-Here is where probability distributions come in.
-
-A probability distribution is a list of values and their corresponding probability.
-
----
-
-# Discrete and continuous
-
-<br>
-
-.center[
-![:scale 80%](img/discr-cont-probs.png)
-]
-
-???
-
-Depending on the nature of the values a variable can take, there are 2 types of probs.
-
----
-
-class: middle
-
-<iframe src="https://seeing-theory.brown.edu/probability-distributions/index.html#section2" style="border:none;" width="100%" height="100%">
-
-???
-
-But how do we describe probability distributions? We can't make a list of all values and probabilities, especially for continuous probabilities.
-
-Instead, we specify the value of a few parameters that describe the distribution in a succinct way.
-
----
-
-class: middle
-
-<span style="font-size:3em;">$$y_i \sim Gaussian(\mu, \sigma)$$</span>
-
-???
-
-Let's look at some formulas.
-
-This is the formula of a variable $y_1$ that is distributed according to (~) a Gaussian probability distribution.
-
-A Gaussian distribution can be described with two parameters: the mean and the standard deviation.
-
----
-
-class: center middle
-
-```{r f0-prior, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
-x <- seq(0, 400)
-ggplot() +
-  aes(x = x, y = dnorm(x, 200, 50)) +
-  geom_line(size = 2) +
-  labs(
-    x = "f0 (Hz)", y = "Density",
-    title = "Distribution of mean f0",
-    subtitle = expression(paste(mu, "=200", ", ", sigma, "=50"))
-  )
-```
-
----
-
-class: middle
-
-<span style="font-size:3em;">$$\text{f0}_i \sim Gaussian(200, 50)$$</span>
-
-???
-
-We can describe that distribution with this formula (much easier than listing all the values and their probability).
-
----
-
 # Bayesian belief update
 
 <br>
@@ -142,7 +52,7 @@ We can describe that distribution with this formula (much easier than listing al
 
 How do we ensure that prior knowledge is not lost?
 
-You've seen in Session 01 that Bayesian analysis is about estimating the posterior probability distribution of a variable of interest.
+You've seen in the previous sessions that Bayesian analysis is about estimating the posterior probability distribution of a variable of interest.
 
 Roughly speaking, the posterior probability distribution is the combination of the prior belief and the evidence derived from the data.
 
@@ -150,105 +60,125 @@ Prior and evidence are, of course, probability distributions.
 
 ---
 
-class: middle
+# Example from last time
 
-<iframe src="https://seeing-theory.brown.edu/bayesian-inference/index.html#section3" style="border:none;" width="100%" height="100%">
+[Massive Auditory Lexical Decision](https://aphl.artsrn.ualberta.ca/?page_id=827) (Tucker et al. 2019):
+
+- **MALD data set**: 521 subjects, RTs and accuracy.
+
+- Subset of MALD: 30 subjects, 100 observations each.
+
+--
+
+```{r mald-print}
+mald
+```
+
 
 ---
 
-# Prior belief as probability distributions
+# Let's start small
 
-&nbsp;
-
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
-
-???
-
-Our prior belief about RTs is that they are distributed according to a Gaussian (aka Gaussian) distribution.
-
-The Gaussian distribution has two parameters: mean $\mu$ and standard deviation $\sigma$.
-
-Now, we want to estimate these two parameters from the data.
+.f2[
+What is the probability distribution of RTs, across all conditions?
+]
 
 ---
 
-# Prior belief as probability distributions
+# Distribution of RTs
 
-&nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-<br>
-
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
-
-<span style="font-size:1.5em;">$$\mu = ...?$$</span>
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+]
 
 ???
 
-We do have an idea of what the mean RT could be like but we are not certain.
-
-When you are not certain, you make a list of values and their probability, i.e. a probability distribution!
-
-https://app.sli.do/event/5yqqvpyDeaTeRDg2Faojay
-
----
-
-# Prior belief as probability distributions
-
-&nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-<br>
-
-
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
-
-<span style="font-size:1.5em;">$$\mu \sim Gaussian(\mu_1, \sigma_1)$$</span>
-
-???
-
-Usually, we assume the mean $\mu$ to be a value taken from another Gaussian distribution (with its own mean and SD).
-
-This Gaussian distribution is the **prior probability distribution** (or simply prior) of the mean.
-
----
-
-# Prior belief as probability distributions
-
-&nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-<br>
-
-
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
-
-<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, \sigma_1)$$</span>
-
-???
-
-We will talk about different types of priors later. For now it's sufficient to remember that a conservative approach (which is what we want to do) is to set $\mu_1$ to 0.
+This formula tells us that `RT`s are distributed according to (`~`) a Gaussian distribution with mean $\mu$ and standard deviation $\sigma$.
 
 --
 
 <br>
 <br>
+<br>
 
-**What about $\sigma_1$?**
+Which values do $\mu$ and $\sigma$ have?
 
-???
+--
 
-What about $\sigma_1$?
+Pick a $\mu$ and $\sigma$. (OK, but how?)
 
 ---
 
+layout: true
+
 # The empirical rule
 
+---
 
-```{r empirical-rule, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+```{r empirical-rule-1, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+x <- seq(-4, 4, by = 0.01)
+y = dnorm(x, 0, 1)
+
+ger_1 <- ggplot() +
+  aes(x, y) +
+  geom_line(size = 2, colour = "#FFA70B") +
+  scale_x_continuous(breaks = c(-4:4), labels = c("", expression(paste(-3, sigma)), expression(paste(-2, sigma)), expression(paste(-1, sigma)), expression(paste(mu)), expression(paste(+1, sigma)), expression(paste(+2, sigma)), expression(paste(+3, sigma)), "")) +
+  ylim(0, 0.6) +
+  labs(
+    x = element_blank(), y = element_blank()
+  )
+ger_1
+```
+
+---
+
+```{r empirical-rule-2, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+ger_1 +
+  geom_ribbon(aes(x = ifelse(x >= -1 & x <= 1, x, NA), ymin = 0, ymax = y), alpha = 0.7, fill = "#8970FF") +
+  annotate(
+    "segment",
+    x = -1, xend = 1, y = 0.45, yend = 0.45,
+    arrow = arrow(ends = "both", angle = 90, length = unit(.2, "cm")),
+    size = 1
+  ) +
+  annotate("label", x = 0, y = 0.45, label = "68%") +
+  geom_line(size = 2, colour = "#FFA70B")
+```
+
+---
+
+```{r empirical-rule-3, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+ger_1 +
+  geom_ribbon(aes(x = ifelse(x >= -2 & x <= 2, x, NA), ymin = 0, ymax = y), alpha = 0.4, fill = "#8970FF") +
+annotate(
+    "segment",
+    x = -2, xend = 2, y = 0.5, yend = 0.5,
+    arrow = arrow(ends = "both", angle = 90, length = unit(.2, "cm")),
+    size = 1
+  ) +
+  annotate("label", x = 0, y = 0.50, label = "95%") +
+  geom_line(size = 2, colour = "#FFA70B")
+```
+
+
+---
+
+```{r empirical-rule-4, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+ger_1 +
+  geom_ribbon(aes(x = x, ymin = 0, ymax = y), alpha = 0.3, fill = "#8970FF") +
+  annotate(
+    "segment",
+    x = -3, xend = 3, y = 0.55, yend = 0.55,
+    arrow = arrow(ends = "both", angle = 90, length = unit(.2, "cm")),
+    size = 1
+  ) +
+  annotate("label", x = 0, y = 0.55, label = "99.7 ≈ 100%") +
+  geom_line(size = 2, colour = "#FFA70B")
+```
+
+---
+
+```{r empirical-rule-5, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
 x <- seq(-4, 4, by = 0.01)
 y = dnorm(x, 0, 1)
 ggplot() +
@@ -279,6 +209,7 @@ ggplot() +
   ) +
   annotate("label", x = 0, y = 0.55, label = "99.7 ≈ 100%") +
   scale_x_continuous(breaks = c(-4:4), labels = c("", expression(paste(-3, sigma)), expression(paste(-2, sigma)), expression(paste(-1, sigma)), expression(paste(mu)), expression(paste(+1, sigma)), expression(paste(+2, sigma)), expression(paste(+3, sigma)), "")) +
+  ylim(0, 0.6) +
   labs(
     x = element_blank(), y = element_blank()
   )
@@ -286,23 +217,110 @@ ggplot() +
 
 ???
 
-As a general rule, $\pm2\sigma_1$ covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
+As a general rule, $\pm2\sigma$ covers 95% of the Gaussian distribution, which means we are 95% confident that the value lies within that range.
+
+---
+
+layout: false
+
+# Distribution of RTs
+
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+]
+
+
+<br>
+<br>
+<br>
+
+Pick a $\mu$ and $\sigma$.
+
+Report them here: <https://forms.gle/cqBNtDvZ6NdnpPo79>
+
+---
+
+class: center middle inverse
+
+.f1[Now let's see what we got!]
+
+---
+
+# Distribution of RTs
+
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu = ...?$$
+]
+
+???
+
+We do have an idea of what the mean RT could be like but we are not certain.
+
+When you are not certain, you make a list of values and their probability, i.e. a probability distribution!
+
+---
+
+# Prior belief as probability distributions
+
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(\mu_1, \sigma_1)$$
+]
+
+???
+
+Usually, we assume the mean $\mu$ to be a value taken from another Gaussian distribution (with its own mean and SD).
+
+This Gaussian distribution is the **prior probability distribution** (or simply prior) of the mean.
+
+---
+
+# Prior belief as probability distributions
+
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(\mu_1 = 0, \sigma_1)$$
+]
+
+???
+
+We will talk about different types of priors later. For now it's sufficient to remember that a conservative approach (which is what we want to do) is to set $\mu_1$ to 0.
+
+--
+
+<br>
+<br>
+
+**What about $\sigma_1$?**
+
+---
+
+# Prior belief as probability distributions
+
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(\mu_1 = 0, \sigma_1)$$
+]
+
+???
 
 Let's be generous and assume that the mean RT will definitely not be greater than 3 seconds. (This might seem like a very high number, but we will see how it can help estimation)
 
-3000/2 = 1500 ms (remember, two times the SD), so we can set $\sigma_1 = 1500$.
+$3000/2 = 1500$ ms (remember, two times the SD), so we can set $\sigma_1 = 1500$.
+
 
 ---
 
 # Seeing is believing
 
-```{r prior-1, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
+```{r mu1-prior, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center"}
 x <- seq(-6000, 6000)
 ggplot() +
   aes(x = x, y = dnorm(x, 0, 1500)) +
   geom_line(size = 2, colour = "#8970FF") +
   labs(
-    x = "RT (ms)", y = "Density",
+    x = "Mean RT (ms)", y = "Density",
     title = expression(paste("Prior for ", mu)),
     subtitle = expression(paste(mu[1], "=0", ", ", sigma[1], "=1500"))
   )
@@ -314,26 +332,21 @@ Visualising priors is important, because it's easier to grasp their meaning when
 
 Are you wondering about the negative values? (RT cannot be negative!) I will tell more about this and how to "fix" it later.
 
+WARNING: The distribution that you see here **is not** the distribution of RTs! It's the prior distribution of the mean of that distribution.
+
 ---
 
 # Prior belief as probability distributions
 
-&nbsp;
-
-**Reaction Times** from a lexical decision task.
-
-<br>
-
-
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
-
-<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, 1500)$$</span>
+.f2[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(0, 1500)$$
+]
 
 ---
 
 # Get the default priors
 
-<br>
 
 ```{r get-prior}
 get_prior(
@@ -376,9 +389,9 @@ my_priors <- c(
 <br>
 <br>
 
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Gaussian(\mu, \sigma)$$</span>
+<span style="font-size:1.5em;">$$\text{RT}_i \sim Normal(\mu, \sigma)$$</span>
 
-<span style="font-size:1.5em;">$$\mu \sim Gaussian(0, 1500)$$</span>
+<span style="font-size:1.5em;">$$\mu \sim Normal(0, 1500)$$</span>
 
 <span style="font-size:1.5em;">$$\sigma = ...?$$</span>
 
