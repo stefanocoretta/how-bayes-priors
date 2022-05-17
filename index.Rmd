@@ -34,6 +34,7 @@ library(bayesplot)
 library(extraDistr)
 options(htmltools.dir.version = FALSE)
 xaringanExtra::use_xaringan_extra(c("panelset", "tachyons"))
+my_cores <- parallel::detectCores()
 ```
 
 ```{r mald, echo=FALSE}
@@ -300,7 +301,7 @@ We will talk about different types of priors later. For now it's sufficient to r
 
 .f2[
 $$\text{RT}_i \sim Normal(\mu, \sigma)$$
-$$\mu \sim Normal(\mu_1 = 0, \sigma_1)$$
+$$\mu \sim Normal(\mu_1 = 0, \sigma_1 = 1500)$$
 ]
 
 ???
@@ -343,6 +344,36 @@ $$\text{RT}_i \sim Normal(\mu, \sigma)$$
 $$\mu \sim Normal(0, 1500)$$
 ]
 
+--
+
+.f6[
+We'll talk about $\sigma$ in a second...
+]
+
+---
+
+# Distribution of RTs
+
+.f2[
+.center[
+`RT ~ 1, family = gaussian`
+]
+
+$$\mu \sim Normal(0, 1500)$$
+]
+
+--
+
+<br>
+<br>
+<br>
+
+How do we specify priors?
+
+???
+
+Before we move on onto specify priors, it is helpful to see how priors are stored in R for use with brms.
+
 ---
 
 # Get the default priors
@@ -356,15 +387,19 @@ get_prior(
 )
 ```
 
+???
+
+You can get the default priors for the specified model with `get_prior()`.
+The important bits of the output are the `prior` and `class` columns.
+We will see their use in a second.
+
 ---
 
 # Set your priors
 
-<br>
-
 ```{r set-priors, eval=FALSE}
 my_priors <- c(
-  prior(...), # Intercept
+  prior(...), # Intercept (i.e. mu)
   prior(...)  # sigma
 )
 ```
@@ -373,11 +408,9 @@ my_priors <- c(
 
 # Set your priors
 
-<br>
-
 ```{r set-priors-2, eval=FALSE}
 my_priors <- c(
-  prior(normal(0, 1500), class = Intercept), # Intercept
+  prior(normal(0, 1500), class = Intercept), # Intercept (i.e. mu)
   prior(...)  # sigma
 )
 ```
@@ -388,12 +421,26 @@ my_priors <- c(
 
 <br>
 <br>
+<br>
 
-<span style="font-size:1.5em;">$$\text{RT}_i \sim Normal(\mu, \sigma)$$</span>
 
-<span style="font-size:1.5em;">$$\mu \sim Normal(0, 1500)$$</span>
+.pull-left[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(\mu_1 = 0, \sigma_1 = 1500)$$
+$$\sigma = ...?$$
+]
 
-<span style="font-size:1.5em;">$$\sigma = ...?$$</span>
+
+.pull-right[
+.center[
+`RT ~ 1, family = gaussian`
+
+`prior(normal(0, 1500), class = Intercept)`
+
+...?
+]
+]
+
 
 ???
 
@@ -403,7 +450,6 @@ Now, what about $\sigma$? (Be careful not to mix up $\sigma$ and $\sigma_1$! Thi
 
 # Prior for $\sigma$: Half Cauchy
 
-<br>
 
 ```{r cauchy, echo=FALSE}
 x <- seq(0, 1500, by = 0.1)
@@ -412,7 +458,7 @@ ggplot() +
   aes(x, y) +
   geom_line(size = 2) +
   labs(
-    x = "Articulation rate (syl/s)", y = "Density",
+    x = "RT standard deviation (ms)", y = "Density",
     title = "Half Cauchy distribution",
     subtitle = expression(paste(mu, "=0", ", ", sigma, "=100"))
   )
@@ -424,8 +470,130 @@ ggplot() +
 HDInterval::inverseCDF(
   c(0.5, 0.75, 0.95),
   phcauchy,
+  sigma = 50
+)
+
+HDInterval::inverseCDF(
+  c(0.5, 0.75, 0.95),
+  phcauchy,
   sigma = 100
 )
+```
+
+---
+
+# Distribution of RTs
+
+<br>
+<br>
+<br>
+
+
+.pull-left[
+$$\text{RT}_i \sim Normal(\mu, \sigma)$$
+$$\mu \sim Normal(\mu_1 = 0, \sigma_1 = 1500)$$
+$$\sigma = HalfCauchy(\mu_2 = 0, \sigma_2 = 100)$$
+]
+
+
+.pull-right[
+.center[
+`RT ~ 1, family = gaussian`
+
+`prior(normal(0, 1500), class = Intercept)`
+
+`prior(cauchy(0, 100), class = sigma)`
+]
+]
+
+---
+
+layout: true
+
+# Prior Predictive Checks
+
+---
+
+```{r rt-1-pp}
+my_priors <- c(
+  prior(normal(0, 1500), class = Intercept), # Intercept (i.e. mu)
+  prior(cauchy(0, 100), class = sigma)  # sigma
+)
+
+rt_1_pp <- brm(
+  RT ~ 1,
+  data = mald,
+  family = gaussian,
+  prior = my_priors,
+  sample_prior = "only",
+  cores = my_cores,
+  file = "data/cache/rt_1_pp",
+  backend = "cmdstanr"
+)
+```
+
+---
+
+```{r rt-1-pp-plot, echo=FALSE, fig.width=7, fig.height=4, out.width="800px", fig.retina=2, fig.align="center", warning=FALSE}
+rt_1_pp_d <- rt_1_pp %>%
+  spread_draws(b_Intercept, sigma) %>%
+  slice_sample(n = 100)
+
+rt_1_pp_d %>%
+  mutate(
+    x = map2(b_Intercept, sigma, ~rnorm(1000, .x, .y)),
+  ) %>%
+  unnest(cols = x) %>%
+  ggplot(aes(x)) +
+  geom_density(size = 2, adjust = 10) +
+  geom_rug(alpha = 0.2) +
+  theme(legend.position = "none") +
+  labs(
+    x = "RT (ms)", y = "Density",
+    title = "Expected distribution of RTs"
+  ) +
+  xlim(-1e4, +1e4)
+```
+
+
+---
+
+layout: false
+
+# Let's run the model
+
+```{r rt-1}
+my_priors <- c(
+  prior(normal(0, 1500), class = Intercept), # Intercept (i.e. mu)
+  prior(cauchy(0, 100), class = sigma)  # sigma
+)
+
+rt_1 <- brm(
+  RT ~ 1,
+  data = mald,
+  family = gaussian,
+  prior = my_priors,
+  cores = my_cores,
+  file = "data/cache/rt_1",
+  backend = "cmdstanr"
+)
+```
+
+
+---
+
+# Distribution of RTs
+
+```{r rt-1-sum}
+rt_1
+```
+
+---
+
+# Distribution of RTs
+
+```{r rt-1-ppc, echo=FALSE}
+pp_check(rt_1, ndraws = 50)
 ```
 
 
@@ -436,9 +604,3 @@ background-image: url("img/chris-robert-unsplash.jpg")
 
 # BREAK
 
----
-
-class: inverse center middle
-background-image: url("img/code-matrix.jpg")
-
-# <span style="font-size:1.5em;">LIVE CODING</span>

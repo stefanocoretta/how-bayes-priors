@@ -1,0 +1,41 @@
+---
+title: "How Bayes: Priors"
+subtitle: "Let's play"
+format: revealjs
+execute: 
+  echo: false
+---
+
+## f0 distributions
+
+```{r}
+library(tidyverse)
+theme_set(theme_light())
+library(googlesheets4)
+```
+
+```{r}
+rt <- read_sheet("https://docs.google.com/spreadsheets/d/1eFeQ1tl61907JiPmUgVWHHkzM8Yqdd40e6S4TRWi5oc/edit?resourcekey#gid=1665865974", 1)
+
+colnames(rt) <- c("Timestamp", "mean_rt", "sd_rt")
+
+if (nrow(rt) == 0) {
+  rt <- tibble(Timestamp = c("a", "b"), mean_rt = c(1000, 2000), sd_rt = c(300, 450))
+}
+
+x <- seq(min(rt$mean_rt) - 3 * max(rt$sd_rt), max(rt$mean_rt) + 3 * max(rt$sd_rt))
+
+rt %>%
+  mutate(
+    y = map2(mean_rt, sd_rt, ~dnorm(x, .x, .y)),
+    x = list(x)
+  ) %>%
+  unnest(cols = c(y, x)) %>%
+  ggplot(aes(x, y, colour = Timestamp)) +
+  geom_line(size = 1) +
+  theme(legend.position = "none") +
+  labs(
+    x = "RT (ms)", y = "Density",
+    title = "Expected distributions of RTs"
+  )
+```
