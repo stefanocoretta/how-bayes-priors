@@ -4,7 +4,7 @@
     <title>How to Bayes: Priors</title>
     <meta charset="utf-8" />
     <meta name="author" content="Stefano Coretta" />
-    <meta name="date" content="2022-05-17" />
+    <meta name="date" content="2022-05-18" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
@@ -27,7 +27,7 @@ class: center, middle, inverse, title-slide
 ### UoE LEL
 ]
 .date[
-### 2022-05-17
+### 2022-05-18
 ]
 
 ---
@@ -585,7 +585,7 @@ class: center middle inverse
 
 ---
 
-# Accuracy data and phonemic density
+# Accuracy and phonemic density
 
 
 ```r
@@ -611,22 +611,162 @@ mald
 
 ---
 
-# Accuracy data and phonemic density
+layout: true
+
+# Accuracy and phonemic density
+
+---
+
+&lt;img src="index_files/figure-html/acc-pd-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="index_files/figure-html/acc-pd-2-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="index_files/figure-html/acc-pd-3-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+layout: false
+
+# Distribution of accuracy data by phonemic distance
+
+.f2[
+`$$\text{ACC}_i \sim Bernoulli(p)$$`
+]
+
+--
+
+.f2[
+`$$logit(p) = \beta_0 + \beta_1\text{PL}_i$$`
+]
+
+--
+
+.f2[
+`$$\beta_0 \sim Normal(\mu_0, \sigma_0)$$`
+]
+
+--
+
+.f2[
+`$$\beta_1 \sim Normal(\mu_1, \sigma_1)$$`
+]
+
+--
+
+&lt;br&gt;
+
+But we are on the log scale now, because of the `logit(p)` part!
+
+--
+
+So priors have to be specified on the log scale.
+
+---
+
+# Log-odds and probabilities
+
+&lt;img src="index_files/figure-html/p-log-odds-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Distribution of accuracy data by phonemic distance
+
+.f2[
+`$$\text{ACC}_i \sim Bernoulli(p)$$`
+
+`$$logit(p) = \beta_0 + \beta_1\text{PL}_i$$`
+
+`$$\beta_0 \sim Normal(0, 1.5)$$`
+
+`$$\beta_1 \sim Normal(0, 1)$$`
+]
+
+???
+
+Remember, `Normal(0, 1.5)` corresponds to 95% CrI [-3, +3]. Which in probability terms is approximately [5%, 95%].
+
+`Normal(0, 1)` corresponds to 95% CrI [-2, +2], which is approximately 95% CrI [0.15, 7.5] in odds.
+
+---
+
+# Accuracy and phonemic density
 
 
 ```r
-mald %&gt;%
-  ggplot(aes(PhonLev)) +
-  geom_bar()
+priors &lt;- c(
+  prior(normal(0, 1.5), class = Intercept), # beta_0
+  prior(normal(0, 1), class = b, coef = PhonLev) # beta_1
+)
+
+acc_1 &lt;- brm(
+  ACC ~ PhonLev,
+  data = mald,
+  family = bernoulli,
+  prior = priors,
+  cores = my_cores,
+  file = "data/cache/acc_1",
+  backend = "cmdstanr"
+)
 ```
 
-```
-## Warning: Computation failed in `stat_count()`:
-## Elements must equal the number of rows or 1
+---
+
+# Accuracy and phonemic density
+
+
+```r
+conditional_effects(acc_1, "PhonLev")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-1-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/acc-1-cond-1.png" height="500px" style="display: block; margin: auto;" /&gt;
 
+
+---
+
+# Accuracy and phonemic density by word type
+
+
+```r
+priors &lt;- c(
+  prior(normal(0, 1.5), class = Intercept), # beta_0
+  prior(normal(0, 1), class = b, coef = PhonLev), # beta_1
+  prior(normal(0, 1), class = b, coef = IsWordFALSE), # beta_2
+  prior(normal(0, 1), class = b, coef = `PhonLev:IsWordFALSE`) # beta_3
+)
+
+acc_2 &lt;- brm(
+  ACC ~ PhonLev * IsWord,
+  data = mald,
+  family = bernoulli,
+  prior = priors,
+  cores = my_cores,
+  file = "data/cache/acc_2",
+  backend = "cmdstanr"
+)
+```
+
+---
+
+# Accuracy and phonemic density by word type
+
+
+```r
+conditional_effects(acc_2, "PhonLev:IsWord")
+```
+
+&lt;img src="index_files/figure-html/acc-2-cond-1.png" height="500px" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: inverse center bottom
+background-image: url("img/chris-robert-unsplash.jpg")
+
+# Questions?
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
