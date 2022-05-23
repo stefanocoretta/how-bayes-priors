@@ -43,8 +43,6 @@ mald <- readRDS("./data/mald.rds")
 
 # Bayesian belief update
 
-<br>
-
 .center[
 ![:scale 60%](img/prior-update.png)
 ]
@@ -81,7 +79,7 @@ mald
 # Let's start small
 
 .f2[
-What is the probability distribution of RTs, across all conditions?
+Which probability distribution we can expect RTs to have in a standard lexical decision task?
 ]
 
 ---
