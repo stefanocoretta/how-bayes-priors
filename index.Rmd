@@ -649,7 +649,7 @@ class: center middle inverse
 
 ---
 
-# Accuracy and phonemic density
+# Accuracy and phonemic distance
 
 ```{r mald-print-2}
 mald
@@ -659,7 +659,7 @@ mald
 
 layout: true
 
-# Accuracy and phonemic density
+# Accuracy and phonemic distance
 
 ---
 
@@ -777,7 +777,7 @@ Remember, `Normal(0, 1.5)` corresponds to 95% CrI [-3, +3]. Which in probability
 
 ---
 
-# Accuracy and phonemic density
+# Accuracy and phonemic distance
 
 ```{r acc-1}
 priors <- c(
@@ -798,7 +798,7 @@ acc_1 <- brm(
 
 ---
 
-# Accuracy and phonemic density
+# Accuracy and phonemic distance
 
 ```{r acc-1-cond}
 conditional_effects(acc_1, "PhonLev")
@@ -807,7 +807,7 @@ conditional_effects(acc_1, "PhonLev")
 
 ---
 
-# Accuracy and phonemic density by word type
+# Accuracy and phonemic distance by word type
 
 ```{r acc-2}
 priors <- c(
@@ -830,7 +830,7 @@ acc_2 <- brm(
 
 ---
 
-# Accuracy and phonemic density by word type
+# Accuracy and phonemic distance by word type
 
 ```{r acc-2-cond}
 conditional_effects(acc_2, "PhonLev:IsWord")
