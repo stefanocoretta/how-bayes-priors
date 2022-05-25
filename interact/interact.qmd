@@ -31,7 +31,7 @@ rt %>%
     x = list(x)
   ) %>%
   unnest(cols = c(y, x)) %>%
-  ggplot(aes(x, y, colour = Timestamp)) +
+  ggplot(aes(x, y, colour = as.character(Timestamp))) +
   geom_line(size = 1) +
   theme(legend.position = "none") +
   labs(
